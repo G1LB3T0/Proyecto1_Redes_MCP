@@ -1,0 +1,24 @@
+# Local environment variables and secrets
+.env
+
+# Local course instructions
+FASE_1_CODEX_GEMINI.md
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Application logs
+logs/*.log
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
