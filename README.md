@@ -7,6 +7,8 @@ This project is a console chatbot for the first phase of the Networks course pro
 ## Current features
 
 - Initial project structure and dependency declaration.
+- Safe loading and validation of Gemini environment variables.
+- Configurable Gemini model selection.
 
 ## Requirements
 
@@ -27,7 +29,7 @@ pip install -r requirements.txt
 
 Copy `.env.example` to `.env`, then set `GEMINI_API_KEY` locally. Do not commit or share `.env`.
 
-`GEMINI_MODEL` will be configurable by the application. Its default value will be `gemini-3.6-flash`.
+`GEMINI_MODEL` is optional. If it is empty or not defined, the application uses `gemini-3.6-flash`.
 
 ## Running the chatbot
 
