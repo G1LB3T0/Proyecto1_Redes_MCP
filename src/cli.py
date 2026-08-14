@@ -1,21 +1,13 @@
-"""Single-request command-line entry point for Gemini verification."""
+"""Interactive command-line chatbot entry point."""
 
 from __future__ import annotations
-
-import argparse
 
 from src.config import ConfigurationError, load_settings
 from src.llm_client import GeminiClient, GeminiRequestError
 
 
 def main() -> int:
-    """Send one prompt to Gemini without starting an interactive chat."""
-
-    parser = argparse.ArgumentParser(
-        description="Send one text prompt to the Gemini Developer API."
-    )
-    parser.add_argument("prompt", help="Text to send to Gemini.")
-    arguments = parser.parse_args()
+    """Start an interactive chat without preserving conversation history."""
 
     try:
         settings = load_settings()
@@ -25,19 +17,38 @@ def main() -> int:
 
     client = GeminiClient(settings)
     try:
-        response = client.ask(arguments.prompt)
-    except GeminiRequestError as error:
-        print(f"Gemini error: {error}")
-        return 1
-    except KeyboardInterrupt:
-        print("Gemini request cancelled.")
-        return 130
+        return run_chat(client, settings.model)
     finally:
         client.close()
 
-    print(f"Model: {settings.model}")
-    print(f"Assistant: {response.text}")
-    return 0
+
+def run_chat(client: GeminiClient, model: str) -> int:
+    """Read prompts and display independent Gemini responses until exit."""
+
+    print("Chatbot CC3067")
+    print(f"Model: {model}")
+    print("Type 'exit' to quit.")
+
+    try:
+        while True:
+            user_message = input("\nYou: ").strip()
+
+            if user_message.lower() == "exit":
+                print("Session closed.")
+                return 0
+            if not user_message:
+                continue
+
+            try:
+                response = client.ask(user_message)
+            except GeminiRequestError as error:
+                print(f"Gemini error: {error}")
+                continue
+
+            print(f"Assistant: {response.text}")
+    except KeyboardInterrupt:
+        print("\nSession closed.")
+        return 0
 
 
 if __name__ == "__main__":

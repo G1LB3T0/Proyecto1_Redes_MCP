@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from google import genai
+from google.genai import types
 
 from src.config import Settings
 
@@ -27,7 +28,13 @@ class GeminiClient:
 
     def __init__(self, settings: Settings) -> None:
         self._model = settings.model
-        self._client = genai.Client(api_key=settings.api_key)
+        self._client = genai.Client(
+            api_key=settings.api_key,
+            http_options=types.HttpOptions(
+                timeout=15_000,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
 
     def ask(self, prompt: str) -> GeminiResponse:
         """Send one stateless text prompt through the Interactions API."""

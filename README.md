@@ -9,7 +9,7 @@ This project is a console chatbot for the first phase of the Networks course pro
 - Initial project structure and dependency declaration.
 - Safe loading and validation of Gemini environment variables.
 - Configurable Gemini model selection.
-- A one-request console test using the Gemini Interactions API.
+- An interactive console chatbot using the Gemini Interactions API.
 
 ## Requirements
 
@@ -34,19 +34,20 @@ Copy `.env.example` to `.env`, then set `GEMINI_API_KEY` locally. Do not commit 
 
 ## Running the chatbot
 
-Send one prompt to Gemini:
+Start the chatbot:
 
 ```powershell
-python -m src.cli "Reply only with: FASE1_API_OK"
+python -m src.cli
 ```
 
-The interactive chatbot will be added in later checkpoints.
+Type `exit` to close the session.
 
 ## Basic usage
 
-The program prints the model response without exposing the API key.
+The program accepts one prompt at a time and prints the model response without exposing the API key.
 
 ## Current limitations
 
-- No interactive conversation or session context is implemented yet.
+- Conversation context is not preserved between turns yet.
+- Each Gemini request has a 15-second timeout and no automatic retries yet.
 - No MCP functionality is implemented.
