@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from src.config import ConfigurationError, load_settings
 from src.llm_client import GeminiClient, GeminiRequestError
+from src.session import ConversationSession
 
 
 def main() -> int:
@@ -17,13 +18,13 @@ def main() -> int:
 
     client = GeminiClient(settings)
     try:
-        return run_chat(client, settings.model)
+        return run_chat(client, settings.model, ConversationSession())
     finally:
         client.close()
 
 
-def run_chat(client: GeminiClient, model: str) -> int:
-    """Read prompts and display independent Gemini responses until exit."""
+def run_chat(client: GeminiClient, model: str, session: ConversationSession) -> int:
+    """Read prompts and display Gemini responses with session-only context."""
 
     print("Chatbot CC3067")
     print(f"Model: {model}")
@@ -39,12 +40,16 @@ def run_chat(client: GeminiClient, model: str) -> int:
             if not user_message:
                 continue
 
+            session.add_user_message(user_message)
+            print("Assistant: waiting for Gemini...")
             try:
-                response = client.ask(user_message)
+                response = client.ask(session.history)
             except GeminiRequestError as error:
+                session.discard_last_user_message()
                 print(f"Gemini error: {error}")
                 continue
 
+            session.add_model_steps(response.steps)
             print(f"Assistant: {response.text}")
     except KeyboardInterrupt:
         print("\nSession closed.")

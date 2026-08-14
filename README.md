@@ -10,6 +10,7 @@ This project is a console chatbot for the first phase of the Networks course pro
 - Safe loading and validation of Gemini environment variables.
 - Configurable Gemini model selection.
 - An interactive console chatbot using the Gemini Interactions API.
+- Conversation context preserved in memory while the chatbot is running.
 
 ## Requirements
 
@@ -44,10 +45,10 @@ Type `exit` to close the session.
 
 ## Basic usage
 
-The program accepts one prompt at a time and prints the model response without exposing the API key.
+The program accepts one prompt at a time and prints the model response without exposing the API key. It remembers prior turns only until the chatbot closes.
 
 ## Current limitations
 
-- Conversation context is not preserved between turns yet.
-- Each Gemini request has a 15-second timeout and no automatic retries yet.
+- Conversation context is not persisted after the program closes.
+- Each Gemini request has a 15-second timeout and one short automatic retry for timeout or server errors. Quota errors are not retried automatically.
 - No MCP functionality is implemented.
