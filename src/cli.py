@@ -7,6 +7,7 @@ import logging
 from src.app_logging import configure_logging
 from src.config import ConfigurationError, load_settings
 from src.llm_client import GeminiClient, GeminiRequestError
+from src.mcp.logging import read_recent_entries
 from src.session import ConversationSession
 
 
@@ -48,6 +49,13 @@ def run_chat(client: GeminiClient, model: str, session: ConversationSession) -> 
                 logger.info("Session closed by exit command")
                 print("Session closed.")
                 return 0
+            if user_message.lower() == "/mcp-log":
+                entries = read_recent_entries()
+                if entries:
+                    print("\n".join(entries))
+                else:
+                    print("No MCP log entries yet.")
+                continue
             if not user_message:
                 continue
 
