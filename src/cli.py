@@ -11,7 +11,7 @@ from src.session import ConversationSession
 
 
 def main() -> int:
-    """Start an interactive chat without preserving conversation history."""
+    """Start an interactive chat with session-only conversation history."""
 
     configure_logging()
     logger = logging.getLogger("chatbot.cli")
