@@ -11,6 +11,7 @@ This project is a console chatbot for the first phase of the Networks course pro
 - Configurable Gemini model selection.
 - An interactive console chatbot using the Gemini Interactions API.
 - Conversation context preserved in memory while the chatbot is running.
+- Application logging for session events and safe API diagnostics.
 
 ## Requirements
 
@@ -46,6 +47,8 @@ Type `exit` to close the session.
 ## Basic usage
 
 The program accepts one prompt at a time and prints the model response without exposing the API key. It remembers prior turns only until the chatbot closes.
+
+Application events are written to `logs/chatbot.log`. The log does not contain API keys or prompt text.
 
 ## Current limitations
 

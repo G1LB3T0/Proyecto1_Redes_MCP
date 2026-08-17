@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any, TypeAlias
 
@@ -12,6 +13,7 @@ from src.config import Settings
 
 
 GeminiInput: TypeAlias = str | list[dict[str, Any]]
+LOGGER = logging.getLogger("chatbot.llm")
 
 
 class GeminiRequestError(Exception):
@@ -57,6 +59,11 @@ class GeminiClient:
                 store=False,
             )
         except Exception as error:
+            LOGGER.warning(
+                "Gemini request failed: error_type=%s status_code=%s",
+                type(error).__name__,
+                _get_status_code(error),
+            )
             raise GeminiRequestError(_friendly_error_message(error)) from error
 
         response_text = getattr(interaction, "output_text", None)
@@ -67,6 +74,11 @@ class GeminiClient:
             )
 
         interaction_id = getattr(interaction, "id", None)
+        LOGGER.info(
+            "Gemini response received: model=%s interaction_id=%s",
+            self._model,
+            interaction_id or "not_exposed",
+        )
         return GeminiResponse(
             text=response_text.strip(),
             interaction_id=interaction_id,
