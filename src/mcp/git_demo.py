@@ -22,6 +22,7 @@ def main() -> int:
     """Exercise official MCP servers without involving Gemini."""
 
     prepare_demo_repository()
+    repository_path = str(GIT_DEMO_REPOSITORY.resolve())
 
     with create_git_client(GIT_DEMO_REPOSITORY) as git_client:
         git_tools = git_client.list_tools()
@@ -35,16 +36,22 @@ def main() -> int:
                 + ", ".join(sorted(missing_tools))
             )
 
-        status_before = git_client.call_tool("git_status")
+        status_before = git_client.call_tool("git_status", {"repo_path": repository_path})
         with create_filesystem_client() as filesystem_client:
             filesystem_client.connect()
             filesystem_client.call_tool(
                 "write_file",
                 {"path": str(README_PATH), "content": demo_readme_content()},
             )
-        add_result = git_client.call_tool("git_add", {"files": ["README.md"]})
-        commit_result = git_client.call_tool("git_commit", {"message": COMMIT_MESSAGE})
-        log_result = git_client.call_tool("git_log", {"max_count": 1})
+        add_result = git_client.call_tool(
+            "git_add", {"repo_path": repository_path, "files": ["README.md"]}
+        )
+        commit_result = git_client.call_tool(
+            "git_commit", {"repo_path": repository_path, "message": COMMIT_MESSAGE}
+        )
+        log_result = git_client.call_tool(
+            "git_log", {"repo_path": repository_path, "max_count": 1}
+        )
 
     print_result("git_status before Filesystem MCP write", status_before)
     print_result("git_add", add_result)
