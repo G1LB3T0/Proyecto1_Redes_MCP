@@ -17,6 +17,9 @@ __pycache__/
 # Application logs
 logs/*.log
 
+# Isolated MCP demonstration workspace
+demo_workspace/
+
 # Editor and operating-system files
 .vscode/
 .idea/
