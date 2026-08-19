@@ -52,10 +52,13 @@ class CoordinatedResponse:
 class McpCoordinator:
     """Discover MCP tools, dispatch calls manually, and return function results."""
 
-    def __init__(self, servers: Sequence[McpServerBinding]) -> None:
+    def __init__(
+        self, servers: Sequence[McpServerBinding], system_instruction: str | None = None
+    ) -> None:
         if not servers:
             raise ValueError("At least one MCP server binding is required.")
         self._servers = tuple(servers)
+        self._system_instruction = system_instruction
         self._tool_bindings: dict[str, McpToolBinding] = {}
         self._gemini_tools: list[dict[str, Any]] = []
         self._prepared = False
@@ -77,7 +80,11 @@ class McpCoordinator:
         new_steps: list[dict[str, Any]] = []
 
         for _ in range(MAX_TOOL_ROUNDS):
-            interaction = client.interact(working_history, self._gemini_tools)
+            interaction = client.interact(
+                working_history,
+                self._gemini_tools,
+                system_instruction=self._system_instruction,
+            )
             working_history.extend(interaction.steps)
             new_steps.extend(interaction.steps)
             calls = _function_calls(interaction.steps)

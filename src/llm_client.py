@@ -75,7 +75,10 @@ class GeminiClient:
         )
 
     def interact(
-        self, interaction_input: GeminiInput, tools: GeminiTools | None = None
+        self,
+        interaction_input: GeminiInput,
+        tools: GeminiTools | None = None,
+        system_instruction: str | None = None,
     ) -> GeminiInteraction:
         """Create a stateless interaction, optionally with normal function tools."""
 
@@ -87,6 +90,8 @@ class GeminiClient:
             }
             if tools:
                 request["tools"] = tools
+            if system_instruction:
+                request["system_instruction"] = system_instruction
             interaction = self._client.interactions.create(**request)
         except Exception as error:
             LOGGER.warning(

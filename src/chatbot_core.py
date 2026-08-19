@@ -61,6 +61,13 @@ def create_demo_chatbot(settings: Settings) -> ChatbotCore:
                 git_client,
                 prepare_arguments=git_demo_argument_preparer(GIT_DEMO_REPOSITORY),
             ),
-        )
+        ),
+        system_instruction=(
+            "Use the provided MCP function tools only when the user requests an "
+            "operation they support. Filesystem MCP is restricted to "
+            f"{GIT_DEMO_REPOSITORY.parent.resolve()}. Git MCP is restricted to "
+            f"{GIT_DEMO_REPOSITORY.resolve()}. Do not attempt to use paths outside "
+            "those locations."
+        ),
     )
     return ChatbotCore(GeminiClient(settings), coordinator)
