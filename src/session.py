@@ -31,3 +31,10 @@ class ConversationSession:
 
         if self.history and self.history[-1].get("type") == "user_input":
             self.history.pop()
+
+    def restore(self, history_length: int) -> None:
+        """Restore a prior local checkpoint after an incomplete turn."""
+
+        if history_length < 0 or history_length > len(self.history):
+            raise ValueError("Invalid conversation history checkpoint.")
+        del self.history[history_length:]

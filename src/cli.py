@@ -5,10 +5,9 @@ from __future__ import annotations
 import logging
 
 from src.app_logging import configure_logging
+from src.chatbot_core import ChatbotCore, ChatbotCoreError, create_demo_chatbot
 from src.config import ConfigurationError, load_settings
-from src.llm_client import GeminiClient, GeminiRequestError
 from src.mcp.logging import read_recent_entries
-from src.session import ConversationSession
 
 
 def main() -> int:
@@ -25,16 +24,16 @@ def main() -> int:
         return 1
 
     logger.info("Chatbot session started: model=%s", settings.model)
-    client = GeminiClient(settings)
+    chatbot = create_demo_chatbot(settings)
     try:
-        return run_chat(client, settings.model, ConversationSession())
+        return run_chat(chatbot, settings.model)
     finally:
-        client.close()
+        chatbot.close()
         logger.info("Chatbot session ended")
 
 
-def run_chat(client: GeminiClient, model: str, session: ConversationSession) -> int:
-    """Read prompts and display Gemini responses with session-only context."""
+def run_chat(chatbot: ChatbotCore, model: str) -> int:
+    """Read prompts and display answers from the interface-independent core."""
 
     logger = logging.getLogger("chatbot.cli")
     print("Chatbot CC3067")
@@ -59,18 +58,15 @@ def run_chat(client: GeminiClient, model: str, session: ConversationSession) -> 
             if not user_message:
                 continue
 
-            session.add_user_message(user_message)
             print("Assistant: waiting for Gemini...")
             try:
-                response = client.ask(session.history)
-            except GeminiRequestError as error:
-                session.discard_last_user_message()
-                logger.warning("Gemini request did not complete; user turn discarded")
-                print(f"Gemini error: {error}")
+                response = chatbot.send_message(user_message)
+            except ChatbotCoreError as error:
+                logger.warning("Chatbot request did not complete; user turn discarded")
+                print(f"Chatbot error: {error}")
                 continue
 
-            session.add_model_steps(response.steps)
-            print(f"Assistant: {response.text}")
+            print(f"Assistant: {response}")
     except KeyboardInterrupt:
         logger.info("Session closed by Ctrl+C")
         print("\nSession closed.")

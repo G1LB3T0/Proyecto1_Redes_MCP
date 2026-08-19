@@ -13,6 +13,7 @@ from src.config import Settings
 
 
 GeminiInput: TypeAlias = str | list[dict[str, Any]]
+GeminiTools: TypeAlias = list[dict[str, Any]]
 LOGGER = logging.getLogger("chatbot.llm")
 
 
@@ -25,6 +26,15 @@ class GeminiResponse:
     """Safe data returned from a completed Gemini interaction."""
 
     text: str
+    interaction_id: str | None
+    steps: tuple[dict[str, Any], ...]
+
+
+@dataclass(frozen=True)
+class GeminiInteraction:
+    """Raw interaction data, including function-call steps when present."""
+
+    text: str | None
     interaction_id: str | None
     steps: tuple[dict[str, Any], ...]
 
@@ -52,12 +62,32 @@ class GeminiClient:
     def ask(self, interaction_input: GeminiInput) -> GeminiResponse:
         """Send stateless input through the Interactions API."""
 
-        try:
-            interaction = self._client.interactions.create(
-                model=self._model,
-                input=interaction_input,
-                store=False,
+        interaction = self.interact(interaction_input)
+        if interaction.text is None:
+            raise GeminiRequestError(
+                "Gemini returned a response without usable text. Try a different "
+                "prompt or review the API response."
             )
+        return GeminiResponse(
+            text=interaction.text,
+            interaction_id=interaction.interaction_id,
+            steps=interaction.steps,
+        )
+
+    def interact(
+        self, interaction_input: GeminiInput, tools: GeminiTools | None = None
+    ) -> GeminiInteraction:
+        """Create a stateless interaction, optionally with normal function tools."""
+
+        try:
+            request: dict[str, Any] = {
+                "model": self._model,
+                "input": interaction_input,
+                "store": False,
+            }
+            if tools:
+                request["tools"] = tools
+            interaction = self._client.interactions.create(**request)
         except Exception as error:
             LOGGER.warning(
                 "Gemini request failed: error_type=%s status_code=%s",
@@ -66,21 +96,17 @@ class GeminiClient:
             )
             raise GeminiRequestError(_friendly_error_message(error)) from error
 
-        response_text = getattr(interaction, "output_text", None)
-        if not isinstance(response_text, str) or not response_text.strip():
-            raise GeminiRequestError(
-                "Gemini returned a response without usable text. Try a different "
-                "prompt or review the API response."
-            )
-
         interaction_id = getattr(interaction, "id", None)
         LOGGER.info(
             "Gemini response received: model=%s interaction_id=%s",
             self._model,
             interaction_id or "not_exposed",
         )
-        return GeminiResponse(
-            text=response_text.strip(),
+        response_text = getattr(interaction, "output_text", None)
+        return GeminiInteraction(
+            text=response_text.strip()
+            if isinstance(response_text, str) and response_text.strip()
+            else None,
             interaction_id=interaction_id,
             steps=_serialize_steps(interaction),
         )
