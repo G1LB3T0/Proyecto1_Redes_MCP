@@ -1,0 +1,11 @@
+[
+  {"sku": "FAR-001", "name": "Paracetamol 500 mg", "stock": 48, "unit": "boxes"},
+  {"sku": "FAR-002", "name": "Ibuprofen 400 mg", "stock": 8, "unit": "boxes"},
+  {"sku": "FAR-003", "name": "Amoxicillin 500 mg", "stock": 15, "unit": "boxes"},
+  {"sku": "FAR-004", "name": "Vitamin C 1000 mg", "stock": 6, "unit": "bottles"},
+  {"sku": "FAR-005", "name": "Vitamin D3 1000 IU", "stock": 12, "unit": "bottles"},
+  {"sku": "FAR-006", "name": "Cetirizine 10 mg", "stock": 4, "unit": "boxes"},
+  {"sku": "FAR-007", "name": "Oral rehydration salts", "stock": 23, "unit": "sachets"},
+  {"sku": "FAR-008", "name": "Insulin syringes", "stock": 9, "unit": "packs"},
+  {"sku": "FAR-009", "name": "Antacid tablets", "stock": 19, "unit": "boxes"}
+]

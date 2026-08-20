@@ -10,6 +10,7 @@ from src.mcp.coordinator import McpCoordinator, McpCoordinatorError, McpServerBi
 from src.mcp.filesystem import create_filesystem_client
 from src.mcp.git import create_git_client
 from src.mcp.git_demo import GIT_DEMO_REPOSITORY
+from src.mcp.pharmacy import create_pharmacy_client
 from src.session import ConversationSession
 
 
@@ -56,6 +57,7 @@ def create_demo_chatbot(settings: Settings) -> ChatbotCore:
     coordinator = McpCoordinator(
         (
             McpServerBinding("filesystem", create_filesystem_client()),
+            McpServerBinding("pharmacy", create_pharmacy_client()),
             McpServerBinding(
                 "git",
                 git_client,
@@ -67,7 +69,8 @@ def create_demo_chatbot(settings: Settings) -> ChatbotCore:
             "operation they support. Filesystem MCP is restricted to "
             f"{GIT_DEMO_REPOSITORY.parent.resolve()}. Git MCP is restricted to "
             f"{GIT_DEMO_REPOSITORY.resolve()}. Do not attempt to use paths outside "
-            "those locations."
+            "those locations. Pharmacy MCP provides demo inventory data only; do not "
+            "give medical advice or make claims about medication use."
         ),
     )
     return ChatbotCore(GeminiClient(settings), coordinator)
