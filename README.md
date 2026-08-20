@@ -1,8 +1,8 @@
-# CC3067 Phase 1 Chatbot
+# CC3067 MCP Chatbot
 
 ## Project overview
 
-This project is a console chatbot for the first phase of the Networks course project. It will use the Gemini Developer API and keep conversation context only while the program is running.
+This project is a console chatbot for the Networks course project. It uses the Gemini Developer API, preserves context only during the active session, and manually coordinates local MCP servers.
 
 ## Current features
 
@@ -12,11 +12,17 @@ This project is a console chatbot for the first phase of the Networks course pro
 - An interactive console chatbot using the Gemini Interactions API.
 - Conversation context preserved in memory while the chatbot is running.
 - Application logging for session events and safe API diagnostics.
+- Manual JSON-RPC MCP client over stdio with request/response wire logging.
+- Official Filesystem MCP Server restricted to `demo_workspace/`.
+- Official Git MCP Server restricted to `demo_workspace/git_demo/`.
+- Local manual Pharmacy Inventory MCP Server with demo-only stock data.
 
 ## Requirements
 
 - Python 3.10 or newer
 - A Gemini Developer API key from Google AI Studio
+- Node.js, npm, and npx for the Filesystem MCP Server
+- uv/uvx and Git for the Git MCP Server
 
 ## Installation
 
@@ -44,14 +50,30 @@ python -m src.cli
 
 Type `exit` to close the session.
 
+Type `/mcp-log` inside the chatbot to display recent real MCP wire-log entries.
+
 ## Basic usage
 
 The program accepts one prompt at a time and prints the model response without exposing the API key. It remembers prior turns only until the chatbot closes.
 
-Application events are written to `logs/chatbot.log`. The log does not contain API keys or prompt text.
+Application events are written to `logs/chatbot.log`. Real, sanitized MCP requests and responses are written to `logs/mcp.log`.
+
+## MCP demo
+
+The official Filesystem and Git servers operate only inside `demo_workspace/`; the main repository is never used as their sandbox.
+
+The local Pharmacy Inventory MCP Server exposes `get_medication_stock`, `search_medications`, and `list_low_stock`. Its JSON dataset contains demonstration stock records only and does not provide medical advice.
+
+To validate the local server without Gemini:
+
+```powershell
+python -m src.mcp.pharmacy_demo
+```
+
+For a chatbot demo, ask: `Search pharmacy items containing "vitamin" and tell me which ones have low stock.`
 
 ## Current limitations
 
 - Conversation context is not persisted after the program closes.
 - Each Gemini request has a 15-second timeout and one short automatic retry for timeout or server errors. Quota errors are not retried automatically.
-- No MCP functionality is implemented.
+- MCP servers are local stdio processes only; remote MCP, cloud deployment, Wireshark analysis, and a frontend are not implemented.
