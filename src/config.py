@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 
 
-DEFAULT_GEMINI_MODEL = "gemini-3.6-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite"
 
 
 class ConfigurationError(Exception):
