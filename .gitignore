@@ -2,7 +2,7 @@
 .env
 
 # Local course instructions
-FASE_1_CODEX_GEMINI.md
+FASE_1_*.md
 
 # Python virtual environments
 .venv/
