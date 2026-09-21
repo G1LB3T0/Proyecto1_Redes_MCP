@@ -1,0 +1,466 @@
+{
+  "capture_file": "pharmacy-remote.pcapng",
+  "sha256": "54ee3f9f6a1358de3e0c288159b3500feb34f1aa6d882750c2a46f11107372b4",
+  "frame_count": 181,
+  "capture_start_epoch": "1789973464.809597400",
+  "last_packet_seconds": 107.2375933,
+  "tcp_streams": 8,
+  "retransmission_frames": [],
+  "http": [
+    {
+      "frame": 14,
+      "time_seconds": 0.3157339,
+      "stream": 0,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 18,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "protocolVersion": "2025-11-25",
+          "capabilities": {},
+          "clientInfo": {
+            "name": "cc3067-manual-mcp-client",
+            "version": "0.2.0"
+          }
+        }
+      },
+      "category": "synchronization"
+    },
+    {
+      "frame": 18,
+      "time_seconds": 0.4762952,
+      "stream": 0,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 14,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "protocolVersion": "2025-11-25",
+          "capabilities": {
+            "tools": {
+              "listChanged": false
+            }
+          },
+          "serverInfo": {
+            "name": "pharmacy-inventory",
+            "version": "0.2.0"
+          }
+        }
+      },
+      "category": "response",
+      "responds_to": "initialize"
+    },
+    {
+      "frame": 37,
+      "time_seconds": 0.8095725,
+      "stream": 1,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 41,
+      "message": {
+        "jsonrpc": "2.0",
+        "method": "notifications/initialized"
+      },
+      "category": "synchronization"
+    },
+    {
+      "frame": 41,
+      "time_seconds": 0.9719944,
+      "stream": 1,
+      "http_method": null,
+      "http_status": 202,
+      "request_frame": 37,
+      "response_frame": null,
+      "message": null,
+      "category": "http_acknowledgment"
+    },
+    {
+      "frame": 60,
+      "time_seconds": 1.3035837,
+      "stream": 2,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 65,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/list"
+      },
+      "category": "request"
+    },
+    {
+      "frame": 65,
+      "time_seconds": 1.4639392,
+      "stream": 2,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 60,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "tools": [
+            {
+              "name": "get_medication_stock",
+              "description": "Get current stock for one pharmacy item by SKU.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "sku": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "sku"
+                ],
+                "additionalProperties": false
+              }
+            },
+            {
+              "name": "search_medications",
+              "description": "Search pharmacy inventory by SKU or product name.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "additionalProperties": false
+              }
+            },
+            {
+              "name": "list_low_stock",
+              "description": "List pharmacy items with stock at or below a threshold.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "threshold": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 10
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          ]
+        }
+      },
+      "category": "response",
+      "responds_to": "tools/list"
+    },
+    {
+      "frame": 83,
+      "time_seconds": 20.219244,
+      "stream": 3,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 87,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": {
+          "name": "get_medication_stock",
+          "arguments": {
+            "sku": "FAR-001"
+          }
+        }
+      },
+      "category": "request"
+    },
+    {
+      "frame": 87,
+      "time_seconds": 20.3763591,
+      "stream": 3,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 83,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"sku\": \"FAR-001\", \"name\": \"Paracetamol 500 mg\", \"stock\": 48, \"unit\": \"boxes\"}"
+            }
+          ],
+          "structuredContent": {
+            "sku": "FAR-001",
+            "name": "Paracetamol 500 mg",
+            "stock": 48,
+            "unit": "boxes"
+          },
+          "isError": false
+        }
+      },
+      "category": "response",
+      "responds_to": "tools/call"
+    },
+    {
+      "frame": 105,
+      "time_seconds": 20.7051204,
+      "stream": 4,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 109,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "tools/call",
+        "params": {
+          "name": "search_medications",
+          "arguments": {
+            "query": "vitamin"
+          }
+        }
+      },
+      "category": "request"
+    },
+    {
+      "frame": 109,
+      "time_seconds": 20.8683632,
+      "stream": 4,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 105,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"items\": [{\"sku\": \"FAR-004\", \"name\": \"Vitamin C 1000 mg\", \"stock\": 6, \"unit\": \"bottles\"}, {\"sku\": \"FAR-005\", \"name\": \"Vitamin D3 1000 IU\", \"stock\": 12, \"unit\": \"bottles\"}]}"
+            }
+          ],
+          "structuredContent": {
+            "items": [
+              {
+                "sku": "FAR-004",
+                "name": "Vitamin C 1000 mg",
+                "stock": 6,
+                "unit": "bottles"
+              },
+              {
+                "sku": "FAR-005",
+                "name": "Vitamin D3 1000 IU",
+                "stock": 12,
+                "unit": "bottles"
+              }
+            ]
+          },
+          "isError": false
+        }
+      },
+      "category": "response",
+      "responds_to": "tools/call"
+    },
+    {
+      "frame": 128,
+      "time_seconds": 21.2037904,
+      "stream": 5,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 132,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "method": "tools/call",
+        "params": {
+          "name": "list_low_stock",
+          "arguments": {
+            "threshold": 10
+          }
+        }
+      },
+      "category": "request"
+    },
+    {
+      "frame": 132,
+      "time_seconds": 21.3683578,
+      "stream": 5,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 128,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"items\": [{\"sku\": \"FAR-002\", \"name\": \"Ibuprofen 400 mg\", \"stock\": 8, \"unit\": \"boxes\"}, {\"sku\": \"FAR-004\", \"name\": \"Vitamin C 1000 mg\", \"stock\": 6, \"unit\": \"bottles\"}, {\"sku\": \"FAR-006\", \"name\": \"Cetirizine 10 mg\", \"stock\": 4, \"unit\": \"boxes\"}, {\"sku\": \"FAR-008\", \"name\": \"Insulin syringes\", \"stock\": 9, \"unit\": \"packs\"}]}"
+            }
+          ],
+          "structuredContent": {
+            "items": [
+              {
+                "sku": "FAR-002",
+                "name": "Ibuprofen 400 mg",
+                "stock": 8,
+                "unit": "boxes"
+              },
+              {
+                "sku": "FAR-004",
+                "name": "Vitamin C 1000 mg",
+                "stock": 6,
+                "unit": "bottles"
+              },
+              {
+                "sku": "FAR-006",
+                "name": "Cetirizine 10 mg",
+                "stock": 4,
+                "unit": "boxes"
+              },
+              {
+                "sku": "FAR-008",
+                "name": "Insulin syringes",
+                "stock": 9,
+                "unit": "packs"
+              }
+            ]
+          },
+          "isError": false
+        }
+      },
+      "category": "response",
+      "responds_to": "tools/call"
+    },
+    {
+      "frame": 151,
+      "time_seconds": 93.4025255,
+      "stream": 6,
+      "http_method": "POST",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 156,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "method": "tools/call",
+        "params": {
+          "name": "get_medication_stock",
+          "arguments": {
+            "sku": "FAR-999"
+          }
+        }
+      },
+      "category": "request"
+    },
+    {
+      "frame": 156,
+      "time_seconds": 93.5659562,
+      "stream": 6,
+      "http_method": null,
+      "http_status": 200,
+      "request_frame": 151,
+      "response_frame": null,
+      "message": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"error\": \"No pharmacy item exists for SKU FAR-999.\"}"
+            }
+          ],
+          "structuredContent": {
+            "error": "No pharmacy item exists for SKU FAR-999."
+          },
+          "isError": true
+        }
+      },
+      "category": "response",
+      "responds_to": "tools/call"
+    },
+    {
+      "frame": 172,
+      "time_seconds": 106.9219806,
+      "stream": 7,
+      "http_method": "DELETE",
+      "http_status": null,
+      "request_frame": null,
+      "response_frame": 176,
+      "message": null,
+      "category": "http_session_close"
+    },
+    {
+      "frame": 176,
+      "time_seconds": 107.0816545,
+      "stream": 7,
+      "http_method": null,
+      "http_status": 204,
+      "request_frame": 172,
+      "response_frame": null,
+      "message": null,
+      "category": "http_session_close"
+    }
+  ],
+  "tls_server_hello": [
+    {
+      "frame": 6,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 29,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 52,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 75,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 97,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 120,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 143,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    },
+    {
+      "frame": 166,
+      "version": "0x0304",
+      "cipher": "0x1302"
+    }
+  ]
+}

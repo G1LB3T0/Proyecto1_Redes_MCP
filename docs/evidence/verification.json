@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-21",
+  "automated_tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "passed": 27,
+    "failed": 0,
+    "model": "simulated"
+  },
+  "live_demo": {
+    "model": "gemini-3.1-flash-lite",
+    "completed_turns": 6,
+    "pharmacy_transport": "http",
+    "official_tools": [
+      "write_file",
+      "git_add",
+      "git_commit",
+      "git_log"
+    ],
+    "demo_commit": "1c2cbf5d0ee49f00fa4ded2e049118be4b9416ea"
+  },
+  "deployment": {
+    "endpoint": "https://mcp.canchonfc.online/mcp",
+    "health_http": 200,
+    "container_health": "healthy",
+    "existing_container_ids_unchanged": true,
+    "existing_bot_active": true,
+    "existing_portal_http": 200,
+    "certificate_renewal_dry_run": "success",
+    "captured_credential_revoked_and_new_credential_verified": true,
+    "deployed_file_sha256": {
+      "src/custom_mcp/http_server.py": "018946fe81c47c252d0b0ba715c0accea35b7271ab9731e2cb93a8cad57c3263",
+      "src/custom_mcp/server_core.py": "f878338b36fb9c212d0e2914fda11eba3d474eafdd1c78f18d6a2948022922b5",
+      "data/pharmacy_inventory.json": "bc1069bc6ba693dc401300beb7c88426c9f8a9aadb7aa5494131d7b6a689c422"
+    }
+  },
+  "capture": {
+    "packets": 181,
+    "dropped": 0,
+    "json_rpc_messages": 13,
+    "http_messages": 16,
+    "tcp_connections": 8,
+    "retransmissions_detected": 0
+  },
+  "submission_pending": [
+    "Repository is still public; course requires private access for faculty.",
+    "Student identification and personal presentation."
+  ]
+}

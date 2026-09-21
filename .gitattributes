@@ -1,0 +1,2 @@
+# Shell scripts are installed on the Ubuntu server.
+*.sh text eol=lf

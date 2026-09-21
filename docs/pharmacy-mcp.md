@@ -3,7 +3,7 @@
 ## Purpose and industry use case
 
 A pharmacy needs to answer stock questions and identify items that may need
-replenishment. This local MCP server gives the chatbot access to an inventory
+replenishment. This MCP server gives the chatbot access to an inventory
 snapshot so it can look up an exact SKU, search product names and identify low
 stock. The chatbot obtains quantities from the server instead of inventing them.
 
@@ -13,9 +13,9 @@ visibility: there is no diagnosis, medication recommendation, sale or inventory
 mutation. Changes to the JSON dataset become visible after restarting the server.
 The project owner confirmed instructor approval of this case study.
 
-This document covers requirement 5 of the course project: a custom local MCP
-server used by the chatbot, with its specification and usage examples. Remote
-hosting and network captures belong to the later project stage.
+This document specifies the shared tools and local transport. The
+[remote deployment guide](deployment.md) documents requirement 6 and the HTTP
+transport. Both execute the same dispatcher and inventory service.
 
 ## Components
 
@@ -24,8 +24,10 @@ hosting and network captures belong to the later project stage.
 | Inventory | `src/custom_mcp/inventory_service.py` | Loads and validates records; executes queries |
 | Protocol | `src/custom_mcp/server_core.py` | Dispatches manual JSON-RPC/MCP messages |
 | Transport | `src/custom_mcp/stdio_server.py` | Reads stdin and writes stdout, one JSON message per line |
-| Client configuration | `src/mcp/pharmacy.py` | Starts the local Python server |
+| Remote transport | `src/custom_mcp/http_server.py` | Authenticated HTTP sessions over the same dispatcher |
+| Client configuration | `src/mcp/pharmacy.py` | Selects stdio or HTTP from settings |
 | Manual client | `src/mcp/stdio_client.py` | Initializes MCP, discovers and calls tools |
+| Remote client | `src/mcp/http_client.py` | HTTPS, lifecycle, discovery, calls and session recovery |
 | Host | `src/mcp/coordinator.py` | Maps Gemini function calls to MCP calls and returns results |
 | Demo | `src/mcp/pharmacy_demo.py` | Checks all three tools and expected errors without Gemini |
 
@@ -40,8 +42,8 @@ Use Python 3.10 or newer. Run commands from the repository root. For the full
 chatbot on Windows, follow the README to install its Python dependencies, Node.js,
 Git and uv, activate `.venv`, prepare the Git demo and configure `.env`.
 
-The custom pharmacy server itself needs no third-party Python packages and no
-credentials. Its standalone check is:
+The local stdio server itself needs no third-party Python packages and no
+credentials. Select `PHARMACY_MCP_TRANSPORT=stdio` in `.env` for this check:
 
 ```powershell
 python -m src.mcp.pharmacy_demo
@@ -80,8 +82,9 @@ stdin ends the server.
 | Data access | Read-only snapshot loaded at process startup |
 
 Each JSON-RPC request occupies one physical line. The examples below can be sent
-in order through stdin. Unknown notifications are ignored. JSON batches, remote
-transport, resources, prompts and other unadvertised capabilities are not offered.
+in order through stdin. Unknown notifications are ignored. JSON batches,
+resources, prompts and other unadvertised capabilities are not offered. The
+HTTP transport uses these same JSON bodies, without newline framing.
 
 ### Initialization
 
@@ -238,7 +241,7 @@ Natural-language phrasing may vary. Check the log for `server=pharmacy`,
 The host exposes the names `pharmacy_get_medication_stock`,
 `pharmacy_search_medications` and `pharmacy_list_low_stock` to Gemini to avoid
 collisions with other servers. It translates them back to the MCP tool names,
-executes the local calls and sends the results to Gemini. Conversation history
+executes calls through the configured transport and sends results to Gemini. Conversation history
 retains tool calls, tool results and model replies for subsequent turns.
 
 ## Reproducible checks
@@ -263,7 +266,7 @@ deliverable source files.
 
 Validation was performed with Python 3.14.6 and `google-genai` 2.24.0:
 
-- All 15 automated tests passed.
+- All 27 automated tests passed, including local HTTP transport integration.
 - The standalone pharmacy demo passed, including both tool and protocol errors.
 - The full chatbot connected to Filesystem, Git and Pharmacy MCP. A real Gemini
   session called all three pharmacy tools and returned the quantities above.
