@@ -1,0 +1,13 @@
+*
+!deploy/
+!deploy/Dockerfile
+!deploy/requirements.txt
+!src/
+!src/**
+!data/
+!data/pharmacy_inventory.json
+**/__pycache__/
+**/*.pyc
+**/*.env
+**/.env
+**/*.keys

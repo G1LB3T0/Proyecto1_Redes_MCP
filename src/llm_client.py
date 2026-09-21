@@ -1,4 +1,4 @@
-"""Gemini Developer API client for Phase 1."""
+"""Gemini Developer API client with stateless conversation exchanges."""
 
 from __future__ import annotations
 

@@ -1,10 +1,11 @@
-"""Manual, Gemini-free validation of the local pharmacy MCP server."""
+"""Gemini-free validation of the configured local or remote pharmacy server."""
 
 from __future__ import annotations
 
 import json
 from typing import Any
 
+from src.config import load_pharmacy_settings
 from src.mcp.pharmacy import create_pharmacy_client
 from src.mcp.protocol import JsonRpcResponseError
 
@@ -12,7 +13,9 @@ from src.mcp.protocol import JsonRpcResponseError
 def main() -> int:
     """Validate discovery, every inventory tool, and both MCP error mechanisms."""
 
-    with create_pharmacy_client() as client:
+    settings = load_pharmacy_settings()
+    print(f"Pharmacy transport: {settings.transport}")
+    with create_pharmacy_client(settings=settings) as client:
         tools = client.list_tools()
         names = {tool["name"] for tool in tools}
         if names != {"get_medication_stock", "search_medications", "list_low_stock"}:

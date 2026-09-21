@@ -1,5 +1,13 @@
 # Local environment variables and secrets
 .env
+deploy/*.env
+logs/captures/
+*.keys
+*.pcap
+*.pcapng
+*.tar.gz
+tmp/
+output/submission/
 
 # Local course instructions
 FASE_1_*.md

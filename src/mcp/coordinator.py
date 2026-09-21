@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from src.llm_client import GeminiClient, GeminiRequestError
-from src.mcp.stdio_client import StdioMcpClient
+from src.mcp.client import McpClient
 
 
 MAX_TOOL_ROUNDS = 8
@@ -28,7 +28,7 @@ class McpServerBinding:
     """One connected MCP server and its optional argument safety policy."""
 
     name: str
-    client: StdioMcpClient
+    client: McpClient
     prepare_arguments: ArgumentPreparer | None = None
 
 
@@ -64,7 +64,7 @@ class McpCoordinator:
         self._prepared = False
 
     def close(self) -> None:
-        """Close every local MCP subprocess owned by this coordinator."""
+        """Close every local subprocess or remote session owned by this host."""
 
         for server in self._servers:
             server.client.close()

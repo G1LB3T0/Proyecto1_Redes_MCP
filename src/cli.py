@@ -18,13 +18,14 @@ def main() -> int:
 
     try:
         settings = load_settings()
-    except ConfigurationError as error:
+        chatbot = create_demo_chatbot(settings)
+    except (ConfigurationError, ValueError, RuntimeError, OSError) as error:
         logger.error("Configuration error: error_type=%s", type(error).__name__)
         print(f"Configuration error: {error}")
         return 1
 
     logger.info("Chatbot session started: model=%s", settings.model)
-    chatbot = create_demo_chatbot(settings)
+    print(f"Pharmacy MCP transport: {settings.pharmacy.transport}")
     try:
         return run_chat(chatbot, settings.model)
     finally:
@@ -67,7 +68,7 @@ def run_chat(chatbot: ChatbotCore, model: str) -> int:
                 continue
 
             print(f"Assistant: {response}")
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         logger.info("Session closed by Ctrl+C")
         print("\nSession closed.")
         return 0

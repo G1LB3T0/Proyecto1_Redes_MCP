@@ -1,9 +1,10 @@
-"""Safe configuration loading for the Phase 1 chatbot."""
+"""Safe configuration loading for the chatbot and pharmacy transports."""
 
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -16,11 +17,22 @@ class ConfigurationError(Exception):
 
 
 @dataclass(frozen=True)
+class PharmacySettings:
+    """Select a local process or the remote pharmacy endpoint."""
+
+    transport: str = "stdio"
+    url: str = ""
+    token: str = field(default="", repr=False)
+    tls_keylog_file: Path | None = None
+
+
+@dataclass(frozen=True)
 class Settings:
     """Configuration values needed by the application."""
 
-    api_key: str
+    api_key: str = field(repr=False)
     model: str
+    pharmacy: PharmacySettings = field(default_factory=PharmacySettings)
 
 
 def load_settings() -> Settings:
@@ -40,4 +52,19 @@ def load_settings() -> Settings:
     if not model:
         model = DEFAULT_GEMINI_MODEL
 
-    return Settings(api_key=api_key, model=model)
+    return Settings(api_key=api_key, model=model, pharmacy=load_pharmacy_settings())
+
+
+def load_pharmacy_settings() -> PharmacySettings:
+    """Load MCP configuration without requiring a Gemini key for protocol demos."""
+
+    load_dotenv()
+    transport = os.getenv("PHARMACY_MCP_TRANSPORT", "stdio").strip().lower()
+    if transport not in {"stdio", "http"}:
+        raise ConfigurationError("PHARMACY_MCP_TRANSPORT must be stdio or http.")
+    url = os.getenv("PHARMACY_MCP_URL", "").strip()
+    token = os.getenv("PHARMACY_MCP_TOKEN", "").strip()
+    if transport == "http" and (not url or not token):
+        raise ConfigurationError("HTTP mode requires PHARMACY_MCP_URL and PHARMACY_MCP_TOKEN.")
+    keylog = os.getenv("MCP_TLS_KEYLOG_FILE", "").strip()
+    return PharmacySettings(transport, url, token, Path(keylog) if keylog else None)

@@ -9,7 +9,7 @@ from src.llm_client import GeminiClient, GeminiRequestError
 from src.mcp.coordinator import McpCoordinator, McpCoordinatorError, McpServerBinding, git_demo_argument_preparer
 from src.mcp.filesystem import create_filesystem_client
 from src.mcp.git import create_git_client
-from src.mcp.git_demo import GIT_DEMO_REPOSITORY
+from src.mcp.git_demo import GIT_DEMO_REPOSITORY, prepare_demo_repository
 from src.mcp.pharmacy import create_pharmacy_client
 from src.session import ConversationSession
 
@@ -51,13 +51,15 @@ class ChatbotCore:
 
 
 def create_demo_chatbot(settings: Settings) -> ChatbotCore:
-    """Build the local chatbot with Filesystem, Git and Pharmacy MCP servers."""
+    """Build the chatbot with local developer tools and local or remote pharmacy."""
 
+    if not (GIT_DEMO_REPOSITORY / ".git").is_dir():
+        prepare_demo_repository()
     git_client = create_git_client(GIT_DEMO_REPOSITORY)
     coordinator = McpCoordinator(
         (
             McpServerBinding("filesystem", create_filesystem_client()),
-            McpServerBinding("pharmacy", create_pharmacy_client()),
+            McpServerBinding("pharmacy", create_pharmacy_client(settings=settings.pharmacy)),
             McpServerBinding(
                 "git",
                 git_client,
