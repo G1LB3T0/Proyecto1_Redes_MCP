@@ -68,7 +68,9 @@ python -m src.mcp.git_demo
 
 This runs the official Filesystem and Git MCP servers, creates a demo README and
 commits it inside `demo_workspace/git_demo/`. It does not commit changes to this
-project. Keep the virtual environment activated so the chatbot can find `uvx`.
+project. The Git client finds `uvx` beside the running Python executable, inside
+the project's `.venv`, or on PATH, in that order. Activation is still recommended
+so Python uses the project's installed dependencies.
 
 Start the chatbot from the project root:
 
@@ -118,8 +120,9 @@ Run the local regression and integration tests without an API key:
 python -m unittest discover -s tests -v
 ```
 
-The 27 tests launch real stdio and local HTTP servers. They cover inventory,
-validation, lifecycle, authentication, sessions, transport parity, errors and
+The 31 tests cover launcher discovery and launch real stdio and local HTTP
+servers. They cover inventory, validation, lifecycle, authentication, sessions,
+transport parity, errors and
 chatbot orchestration. The model is simulated in automated tests.
 
 Run a real six-turn Gemini demonstration (uses API quota and changes only the
