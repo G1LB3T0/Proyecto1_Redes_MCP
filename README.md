@@ -32,6 +32,7 @@ Create and activate a virtual environment, then install the dependencies:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+python -m pip install uv
 ```
 
 ## Environment variables
@@ -42,7 +43,17 @@ Copy `.env.example` to `.env`, then set `GEMINI_API_KEY` locally. Do not commit 
 
 ## Running the chatbot
 
-Start the chatbot:
+Before the first chatbot run, prepare and verify its isolated Git repository:
+
+```powershell
+python -m src.mcp.git_demo
+```
+
+This runs the official Filesystem and Git MCP servers, creates a demo README and
+commits it inside `demo_workspace/git_demo/`. It does not commit changes to this
+project. Keep the virtual environment activated so the chatbot can find `uvx`.
+
+Start the chatbot from the project root:
 
 ```powershell
 python -m src.cli
@@ -72,8 +83,30 @@ python -m src.mcp.pharmacy_demo
 
 For a chatbot demo, ask: `Search pharmacy items containing "vitamin" and tell me which ones have low stock.`
 
+The [Pharmacy MCP specification and usage guide](docs/pharmacy-mcp.md) documents
+the industry use case, local launch command, lifecycle, tool parameters, response
+formats, JSON-RPC examples, errors and demonstration steps for requirement 5.
+
+The pharmacy server and manual client implement JSON-RPC directly using Python's
+standard library. No MCP SDK or FastMCP is used in the custom implementation.
+The Google SDK is used only for Gemini API access; the official Filesystem and
+Git servers run as separate processes.
+
+## Automated checks
+
+Run the local regression and integration tests without an API key:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+These tests launch the actual pharmacy process and cover its protocol, inventory
+queries, validation, errors and chatbot tool orchestration. The model is simulated
+in the automated integration test; follow the usage guide to test real Gemini.
+
 ## Current limitations
 
 - Conversation context is not persisted after the program closes.
-- Each Gemini request has a 15-second timeout and one short automatic retry for timeout or server errors. Quota errors are not retried automatically.
+- Each Gemini request has a 60-second timeout and one short automatic retry for timeout or server errors. Quota errors are not retried automatically.
 - MCP servers are local stdio processes only; remote MCP, cloud deployment, Wireshark analysis, and a frontend are not implemented.
+- The full chatbot expects all three MCP servers to be available. The standalone pharmacy demo and tests do not require Node.js, Git, uvx or a Gemini key.

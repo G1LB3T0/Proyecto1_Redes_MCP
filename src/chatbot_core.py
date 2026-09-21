@@ -51,7 +51,7 @@ class ChatbotCore:
 
 
 def create_demo_chatbot(settings: Settings) -> ChatbotCore:
-    """Build the local chatbot with only the approved Filesystem and Git MCP servers."""
+    """Build the local chatbot with Filesystem, Git and Pharmacy MCP servers."""
 
     git_client = create_git_client(GIT_DEMO_REPOSITORY)
     coordinator = McpCoordinator(

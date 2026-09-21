@@ -26,13 +26,26 @@ def main() -> int:
 
 def _handle_line(server: PharmacyMcpServer, line: str) -> dict[str, Any] | None:
     try:
-        return server.handle(json.loads(line))
-    except json.JSONDecodeError:
+        message = json.loads(line, parse_constant=_reject_non_json_number)
+    except (json.JSONDecodeError, ValueError):
         print("Received invalid JSON-RPC input.", file=sys.stderr)
         return _error_response(None, -32700, "Parse error")
+    try:
+        return server.handle(message)
     except Exception as error:
         print(f"Unhandled pharmacy MCP server error: {type(error).__name__}", file=sys.stderr)
-        return _error_response(None, -32603, "Internal error")
+        if isinstance(message, dict) and "id" not in message:
+            return None
+        request_id = message.get("id") if isinstance(message, dict) else None
+        if isinstance(request_id, bool) or not isinstance(request_id, (int, str)):
+            request_id = None
+        return _error_response(request_id, -32603, "Internal error")
+
+
+def _reject_non_json_number(value: str) -> None:
+    """Python accepts NaN and Infinity by default, but JSON-RPC uses strict JSON."""
+
+    raise ValueError(f"Invalid JSON number: {value}")
 
 
 def _configure_utf8() -> None:

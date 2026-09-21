@@ -15,6 +15,7 @@ from src.config import Settings
 GeminiInput: TypeAlias = str | list[dict[str, Any]]
 GeminiTools: TypeAlias = list[dict[str, Any]]
 LOGGER = logging.getLogger("chatbot.llm")
+GEMINI_TIMEOUT_SECONDS = 60
 
 
 class GeminiRequestError(Exception):
@@ -47,7 +48,7 @@ class GeminiClient:
         self._client = genai.Client(
             api_key=settings.api_key,
             http_options=types.HttpOptions(
-                timeout=15_000,
+                timeout=GEMINI_TIMEOUT_SECONDS * 1000,
                 retry_options=types.HttpRetryOptions(
                     attempts=2,
                     initial_delay=0.5,
@@ -135,7 +136,7 @@ def _friendly_error_message(error: Exception) -> str:
     if status_code is not None and 500 <= status_code < 600:
         return "Gemini is temporarily unavailable. Wait and try again later."
     if isinstance(error, TimeoutError) or "timeout" in error_name:
-        return "Gemini did not respond within 15 seconds. Please try again."
+        return f"Gemini did not respond within {GEMINI_TIMEOUT_SECONDS} seconds. Please try again."
     if isinstance(error, ConnectionError) or any(
         marker in error_name for marker in ("connect", "network", "transport")
     ):
